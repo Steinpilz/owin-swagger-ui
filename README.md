@@ -1,18 +1,45 @@
 # Steinpilz.Owin.SwaggerUI
 
 ## Introduction
-{TODO: Short description of the repository goes here}
 
-{TODO: Description for each package as a subsection}
+OWIN middleware to serve SwaggerUI web assets. 
+
+Distributed as NuGet package `Steinpilz.Owin.SwaggerUI`
+
+## Sample 
+
+```csharp
+using System;
+
+namespace Steinpilz.Owin.SwaggerUI.ConsoleHost
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            using (Microsoft.Owin.Hosting.WebApp.Start("http://localhost:5008", appBuilder =>
+            {
+                appBuilder.UseSwaggerUI(
+                    "/ui/swagger", 
+                    opt => opt.UseSwaggerEndpoint("http://petstore.swagger.io/v2/swagger.json")
+                    );
+            }))
+            {
+                Console.ReadLine();
+            }
+        }
+    }
+}
+```
 
 ## FAQ
 
 ## Questions & Issues
 
-Use built-in gitlab [issue tracker]({TODO: repository link}/issues)
+Use built-in gitlab [issue tracker](https://github.com/Steinpilz/owin-swagger-ui/issues)
 
 ## Maintainers
-@{TODO: Maintaner gitlab user name}
+@ivanbenko
 
 ## Contribution
 
