@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\common.props" />
+  <PropertyGroup>
+    <TargetFrameworks>net451;netstandard2.0</TargetFrameworks>
+    <Description>Steinpilz.Owin.SwaggerUI</Description>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Include="assets\**\*"></EmbeddedResource>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Owin" Version="3.1.0" />
+    <PackageReference Include="Steinpilz.Owin.WebAssets" Version="1.0.0-preview001" />
+  </ItemGroup>
+
+</Project>

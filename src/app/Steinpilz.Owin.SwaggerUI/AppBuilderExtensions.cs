@@ -1,0 +1,72 @@
+﻿using Microsoft.Owin;
+using Microsoft.Owin.FileSystems;
+using Owin;
+using Steinpilz.Owin.WebAssets;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Steinpilz.Owin.SwaggerUI
+{
+    public static class AppBuilderExtensions
+    {
+        public static IAppBuilder UseSwaggerUI(
+            this IAppBuilder appBuilder, 
+            string mountPath, 
+            Action<SwaggerUIOptions> configuration = null)
+        {
+            var options = new SwaggerUIOptions();
+            configuration?.Invoke(options);
+
+            return appBuilder
+                .UseWebAssets(mountPath, opt => opt
+                    .AddWebAssetProcessor(new WebAssetProcessor(options.SwaggerEndpoint))
+                    .UseFileSystem(new EmbeddedResourceFileSystem(
+                        typeof(AppBuilderExtensions).Assembly,
+                        "Steinpilz.Owin.SwaggerUI.assets"
+                        ))
+                );
+        }
+    }
+
+    public class SwaggerUIOptions
+    {
+        public Func<IOwinRequest, string> SwaggerEndpoint { get; private set; } = req => "swagger.json";
+
+        public SwaggerUIOptions UseSwaggerEndpoint(string endpointUrl)
+        {
+            SwaggerEndpoint = req => endpointUrl;
+            return this;
+        }
+
+        public SwaggerUIOptions UseSwaggerEndpoint(Func<IOwinRequest, string> endpointUrlFunc)
+        {
+            SwaggerEndpoint = endpointUrlFunc;
+            return this;
+        }
+    }
+
+    class WebAssetProcessor : IWebAssetProcessor
+    {
+        private readonly Func<IOwinRequest, string> endpointUrlFunc;
+
+        public WebAssetProcessor(Func<IOwinRequest, string> endpointUrl)
+        {
+            this.endpointUrlFunc = endpointUrl;
+        }
+
+        public WebAsset Process(WebAsset webAsset, IOwinRequest request)
+        {
+            var endpointUrl = this.endpointUrlFunc?.Invoke(request) ?? ""; 
+            var baseHref = request.PathBase.Value + "/";
+            return webAsset.WithNewContent(webAsset.Content.Replace(
+                new[] {
+                    ("{BASE_HREF}", baseHref),
+                    ("{ENDPOINT_URL}", endpointUrl),
+                })
+                );
+        }
+    }
+}
