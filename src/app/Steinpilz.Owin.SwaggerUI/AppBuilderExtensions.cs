@@ -57,16 +57,30 @@ namespace Steinpilz.Owin.SwaggerUI
             this.endpointUrlFunc = endpointUrl;
         }
 
-        public WebAsset Process(WebAsset webAsset, IOwinRequest request)
+        public async Task<WebAsset> ProcessAsync(WebAsset webAsset, IOwinRequest request)
         {
             var endpointUrl = this.endpointUrlFunc?.Invoke(request) ?? ""; 
-            var baseHref = request.PathBase.Value + "/";
-            return webAsset.WithNewContent(webAsset.Content.Replace(
+
+            // take care about reverse proxy hosting scenarios
+            var virtualFolder = request.PathBase.Value;
+            var stripPath = request.Headers["X-Forwarded-Strip"] ?? "";
+            var prefix = request.Headers["X-Forwarded-Prefix"] ?? "";
+
+            if (virtualFolder.StartsWith(stripPath, StringComparison.OrdinalIgnoreCase))
+                virtualFolder = virtualFolder.Remove(0, stripPath.Length);
+
+            if (!virtualFolder.StartsWith("/"))
+                virtualFolder += "/";
+
+            var baseHref = prefix + virtualFolder;
+            if (!baseHref.EndsWith("/"))
+                baseHref += "/";
+
+            return webAsset.WithNewContent(await webAsset.Content.ReplaceAsync(
                 new[] {
                     ("{BASE_HREF}", baseHref),
                     ("{ENDPOINT_URL}", endpointUrl),
-                })
-                );
+                }).ConfigureAwait(false));
         }
     }
 }

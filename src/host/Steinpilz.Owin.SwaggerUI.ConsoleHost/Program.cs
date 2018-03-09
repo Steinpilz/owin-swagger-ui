@@ -6,9 +6,12 @@ namespace Steinpilz.Owin.SwaggerUI.ConsoleHost
     {
         static void Main(string[] args)
         {
-            using (Microsoft.Owin.Hosting.WebApp.Start("http://localhost:5008", appBuilder =>
+            using (Microsoft.Owin.Hosting.WebApp.Start("http://localhost:5008/owin", appBuilder =>
             {
-                appBuilder.UseSwaggerUI("/ui/swagger", opt => opt.UseSwaggerEndpoint("https://qdc.apps.stein-pilz.com/swagger.yaml"));
+                appBuilder.UseSwaggerUI(
+                    "/ui/swagger", 
+                    opt => opt.UseSwaggerEndpoint("https://qdc.apps.stein-pilz.com/swagger.yaml")
+                    );
             }))
             {
                 Console.ReadLine();
