@@ -11,7 +11,7 @@
   
   <ItemGroup>
     <PackageReference Include="Microsoft.Owin" Version="3.1.0" />
-    <PackageReference Include="Steinpilz.Owin.WebAssets" Version="1.0.0-preview002" />
+    <PackageReference Include="Steinpilz.Owin.WebAssets" Version="1.0.0-preview003" />
   </ItemGroup>
 
 </Project>
