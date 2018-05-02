@@ -10,7 +10,7 @@ namespace Steinpilz.Owin.SwaggerUI.ConsoleHost
             {
                 appBuilder.UseSwaggerUI(
                     "/ui/swagger", 
-                    opt => opt.UseSwaggerEndpoint("https://qdc.apps.stein-pilz.com/swagger.yaml")
+                    opt => opt.UseSwaggerEndpoint("http://petstore.swagger.io/v2/swagger.json")
                     );
             }))
             {
