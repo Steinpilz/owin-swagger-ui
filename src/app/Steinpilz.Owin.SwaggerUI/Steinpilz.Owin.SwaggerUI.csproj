@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net451</TargetFrameworks>
     <Description>Steinpilz.Owin.SwaggerUI</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
   
   <ItemGroup>
