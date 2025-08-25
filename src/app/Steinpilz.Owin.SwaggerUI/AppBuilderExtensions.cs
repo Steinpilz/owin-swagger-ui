@@ -1,12 +1,13 @@
-﻿using Microsoft.Owin;
-using Microsoft.Owin.FileSystems;
-using Owin;
-using Steinpilz.Owin.WebAssets;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Owin;
+using Microsoft.Owin.FileSystems;
+using Owin;
+using Steinpilz.Owin.WebAssets;
+using Steinpilz.Owin.WebAssets.Helpers;
 
 namespace Steinpilz.Owin.SwaggerUI
 {
@@ -69,12 +70,9 @@ namespace Steinpilz.Owin.SwaggerUI
             if (virtualFolder.StartsWith(stripPath, StringComparison.OrdinalIgnoreCase))
                 virtualFolder = virtualFolder.Remove(0, stripPath.Length);
 
-            if (!virtualFolder.StartsWith("/"))
-                virtualFolder += "/";
-
-            var baseHref = prefix + virtualFolder;
-            if (!baseHref.EndsWith("/"))
-                baseHref += "/";
+            // Properly concat and normalize base href to avoid double slashes, etc.
+            // Here trailing slash is applied to preserve the original behavior.
+            var baseHref = UriStringExtensions2.UrlCombine(prefix, virtualFolder).TrimSlashes().WithLeadingSlash().WithTailingSlash();
 
             return webAsset.WithNewContent(await webAsset.Content.ReplaceAsync(
                 new[] {
@@ -82,5 +80,15 @@ namespace Steinpilz.Owin.SwaggerUI
                     ("{ENDPOINT_URL}", endpointUrl),
                 }).ConfigureAwait(false));
         }
+    }
+
+    // TODO: Replace with Steinpilz.Owin.WebAssets.Helpers.UriStringExtensions when available after update to Steinpilz.Owin.WebAssets v4.0.1 or later
+    static class UriStringExtensions2
+    {
+        public static string TrimSlashes(this string path)
+            => path.Trim('/');
+
+        public static string UrlCombine(params string[] urlParts) =>
+            string.Join("/", urlParts.Where(part => !string.IsNullOrWhiteSpace(part)).Select(TrimSlashes));
     }
 }
